@@ -1,14 +1,22 @@
 using Circle_App.Data;
+using Circle_App.Helpers;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddDbContext<ApplicationDbContext>(options => 
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("CircleAppDb")));
 
 var app = builder.Build();
+//Seed the database with  initial data
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await dbContext.Database.MigrateAsync();
+    await DbInitializer.SeedAsync(dbContext);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
