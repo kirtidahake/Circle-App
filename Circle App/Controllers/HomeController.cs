@@ -20,7 +20,10 @@ namespace Circle_App.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var allPosts = await _context.Posts.Include(u => u.User).ToListAsync();
+            var allPosts = await _context.Posts
+                .Include(u => u.User)
+                .OrderByDescending(n => n.DateCreated)
+                .ToListAsync();
             return View(allPosts);
         }
 
