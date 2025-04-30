@@ -1,4 +1,6 @@
 using Circle_App.Data;
+using Circle_App.Data.Models;
+using Circle_App.ViewModels.Home;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -22,6 +24,25 @@ namespace Circle_App.Controllers
             return View(allPosts);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> CreatePost(PostViewModel post)
+        {
+            int loggedInUser = 1;
+
+            var newPost = new Posts()
+            {
+                Content = post.Content,
+                DateCreated = DateTime.UtcNow,
+                DateUploaded = DateTime.UtcNow,
+                ImageUrl = "",
+                NrOfReports = 0,
+                UserId = loggedInUser
+            };
+            await _context.Posts.AddAsync(newPost);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
         
     }
 }
