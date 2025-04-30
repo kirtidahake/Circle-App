@@ -41,6 +41,24 @@ namespace Circle_App.Controllers
                 NrOfReports = 0,
                 UserId = loggedInUser
             };
+
+            if (post.Image != null && post.Image.Length > 0)
+            {
+                string rootFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                if (post.Image.ContentType.Contains("image"))
+                {
+                    string rooFolderPathImages = Path.Combine(rootFolderPath, "images");
+                    Directory.CreateDirectory(rooFolderPathImages);
+
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(post.Image.FileName);
+                    string filePath = Path.Combine(rooFolderPathImages, fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                        await post.Image.CopyToAsync(stream);
+
+                    newPost.ImageUrl = "/images/" + fileName;
+                }
+            }
             await _context.Posts.AddAsync(newPost);
             await _context.SaveChangesAsync();
 
