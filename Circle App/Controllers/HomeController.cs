@@ -64,6 +64,32 @@ namespace Circle_App.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> TogglePostLike(PostLikeViewModel postLikeVM)
+        {
+            int loggedInUserId = 1;
+
+            var like = await _context.Likes
+                .Where(l => l.UserId == loggedInUserId && l.PostId == postLikeVM.PostId)
+                .FirstOrDefaultAsync();
+
+            if (like != null)
+            {
+                _context.Likes.Remove(like);
+                await _context.SaveChangesAsync();
+            }
+            else {
+                var newLike = new Likes()
+                {
+                    PostId = postLikeVM.PostId,
+                    UserId = loggedInUserId
+                };
+                _context.Likes.Add(newLike);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction("Index");
+        }
         
     }
 }
