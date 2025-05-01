@@ -23,9 +23,9 @@ namespace Circle_App.Data
                 .HasKey(l => new { l.PostId, l.UserId });
 
             modelBuilder.Entity<Likes>()
-                .HasOne(l => l.Posts)
+                .HasOne(l => l.Post)
                 .WithMany(p => p.Likes)
-                .HasForeignKey(l => l.UserId)
+                .HasForeignKey(l => l.PostId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Likes>()
