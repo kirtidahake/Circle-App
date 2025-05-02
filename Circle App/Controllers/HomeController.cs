@@ -23,6 +23,7 @@ namespace Circle_App.Controllers
             var allPosts = await _context.Posts
                 .Include(u => u.User)
                 .Include(u => u.Likes)
+                .Include(u =>u.Comments).ThenInclude(u => u.User)
                 .OrderByDescending(n => n.DateCreated)
                 .ToListAsync();
             return View(allPosts);
