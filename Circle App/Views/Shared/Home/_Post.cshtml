@@ -129,7 +129,15 @@
                         </a>
                         <small>@commentDisplayTime</small>
                     </div>
-                        <p class="mt-0.5">@comment.CommentContent</p>
+                    <div class="flex items-center justify-between">
+                         <p class="mt-0.5">@comment.CommentContent</p>
+                         <form asp-contrpller="Home" asp-method="RemovePostCpmment">
+                             <input type="hidden" name="CommentId" value="@comment.CommentId"/>
+                             <button type="submit" class="text-red-500 text-sm ml-2" title="Remove post comment">
+                                 <ion-icon name="trash-outline"></ion-icon>
+                             </button>
+                         </form>
+                    </div>
                 </div>
             </div>
             }
