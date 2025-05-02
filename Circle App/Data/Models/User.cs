@@ -11,5 +11,7 @@ namespace Circle_App.Data.Models
 
         public ICollection<Posts> Posts { get; set; } = new List<Posts>();
         public ICollection<Likes> Likes { get; set; } = new List<Likes>();
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+
     }
 }
