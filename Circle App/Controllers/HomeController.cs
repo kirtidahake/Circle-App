@@ -91,6 +91,25 @@ namespace Circle_App.Controllers
             }
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> AddPostComment(PostCommentViewModel model)
+        {
+            int loggedInUserId = 1;
+
+            var newCommnet = new Comment()
+            {
+                UserId = loggedInUserId,
+                PostId = model.PostId,
+                CommentContent = model.CommentContent,
+                CreatedDate = DateTime.UtcNow,
+                UpdatedDate = DateTime.UtcNow
+            };
+            await _context.Comments.AddAsync(newCommnet);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
         
     }
 }
