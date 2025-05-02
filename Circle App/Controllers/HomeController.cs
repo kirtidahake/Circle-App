@@ -22,6 +22,7 @@ namespace Circle_App.Controllers
         {
             var allPosts = await _context.Posts
                 .Include(u => u.User)
+                .Include(u => u.Likes)
                 .OrderByDescending(n => n.DateCreated)
                 .ToListAsync();
             return View(allPosts);
@@ -67,7 +68,7 @@ namespace Circle_App.Controllers
 
         [HttpPost]
         public async Task<IActionResult> TogglePostLike(PostLikeViewModel postLikeVM)
-        {
+         {
             int loggedInUserId = 1;
 
             var like = await _context.Likes
