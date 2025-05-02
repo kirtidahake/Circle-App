@@ -103,15 +103,15 @@
 
     @* Add comment section *@
     <div>
-        <div class="sm:px-4 sm:py-3 p-2.5 border-t border-gray-100 flex items-center gap-1">
-            <img src="~/images/cat.jpg" class="w-6 h-6 rounded-full" />
-
-            <div class="flex-1 relative overflow-hidden h-10">
-                <textarea placeholder="Add Comment...." rows="1" class="w-full resize-none !bg-transparent px-4 py-2 focus:!border-transparent focus:!ring-transparent"></textarea>
+        <form asp-controller="Home" asp-action="AddPostComment">
+            <div class="sm:px-4 sm:py-3 p-2.5 border-t border-gray-100 flex items-center gap-1">
+                <img src="~/images/cat.jpg" class="w-6 h-6 rounded-full" />
+                <input type="hidden" name="postId" value="@Model.PostId"/>
+                <div class="flex-1 relative overflow-hidden h-10">
+                    <textarea name="CommentContent" placeholder="Add Comment...." rows="1" class="w-full resize-none !bg-transparent px-4 py-2 focus:!border-transparent focus:!ring-transparent"></textarea>
+                </div>
+                <button type=submit class="text-sm rounded-full py-1.5 px-3.5 bg-secondery">Comment</button>
             </div>
-
-            <button class="text-sm rounded-full py-1.5 px-3.5 bg-secondery">Comment</button>
-
-        </div>
+        </form>
     </div>
 </div>
