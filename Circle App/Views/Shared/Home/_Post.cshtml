@@ -95,9 +95,12 @@
         <div class="ml-auto"></div>
 
         <div>
-            <a class="button-icon ml-auto">
+            <form asp-controller="Home" asp-action="TogglePostFavourite">
+             <input type="hidden" name="PostId" value="@Model.PostId" />
+            <button type="submit" class="button-icon ml-auto">
                 <ion-icon class="text-lg" name="bookmark-outline"></ion-icon>
-            </a>
+            </button>
+            </form>
         </div>
     </div>
 
