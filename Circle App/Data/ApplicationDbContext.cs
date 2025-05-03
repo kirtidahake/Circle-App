@@ -13,6 +13,7 @@ namespace Circle_App.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Likes> Likes { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<Favourites> Favourites { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
@@ -46,6 +47,20 @@ namespace Circle_App.Data
                 .HasForeignKey(l => l.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Favourites>()
+               .HasKey(l => new { l.PostId, l.UserId });
+
+            modelBuilder.Entity<Favourites>()
+                .HasOne(l => l.Post)
+                .WithMany(p => p.Favourites)
+                .HasForeignKey(l => l.PostId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Favourites>()
+                .HasOne(l => l.User)
+                .WithMany(u => u.Favourites)
+                .HasForeignKey(l => l.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
 
