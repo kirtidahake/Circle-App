@@ -22,7 +22,7 @@ namespace Circle_App.Controllers
         {
             int loggedInUser = 1;
             var allPosts = await _context.Posts
-                .Where(u => !u.IsPrivate || u.UserId == loggedInUser)
+                .Where(u => (!u.IsPrivate || u.UserId == loggedInUser) && u.Reports.Count < 5)
                 .Include(u => u.User)
                 .Include(u => u.Likes)
                 .Include(u => u.Favourites)
