@@ -123,6 +123,33 @@ namespace Circle_App.Controllers
             }
             return RedirectToAction("Index");
         }
-        
+
+        //FavouriteViewModel
+        [HttpPost]
+        public async Task<IActionResult> TogglePostFavourite(FavouriteViewModel model)
+        {
+            int loggedInUserId = 1;
+
+            var favourite = await _context.Favourites
+                .Where(l => l.UserId == loggedInUserId && l.PostId == model.PostId)
+                .FirstOrDefaultAsync();
+
+            if (favourite != null)
+            {
+                _context.Favourites.Remove(favourite);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                var newFavourite = new Favourites()
+                {
+                    PostId = model.PostId,
+                    UserId = loggedInUserId
+                };
+                _context.Favourites.Add(newFavourite);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction("Index");
+        }
     }
 }
