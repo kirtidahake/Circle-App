@@ -171,5 +171,22 @@ namespace Circle_App.Controllers
             
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> AddPostReport(PostReportViewModel model)
+        {
+            int loggedInUserId = 1;
+
+            var newReport = new Report()
+            {
+                UserId = loggedInUserId,
+                PostId = model.PostId,
+                DateCreated = DateTime.UtcNow,
+            };
+            await _context.Reports.AddAsync(newReport);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
     }
 }
