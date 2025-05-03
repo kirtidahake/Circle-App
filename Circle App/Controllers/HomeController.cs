@@ -26,6 +26,7 @@ namespace Circle_App.Controllers
                 .Include(u => u.User)
                 .Include(u => u.Likes)
                 .Include(u => u.Favourites)
+                .Include(u => u.Reports)
                 .Include(u =>u.Comments).ThenInclude(u => u.User)
                 .OrderByDescending(n => n.DateCreated)
                 .ToListAsync();
