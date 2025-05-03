@@ -125,7 +125,6 @@ namespace Circle_App.Controllers
             return RedirectToAction("Index");
         }
 
-        //FavouriteViewModel
         [HttpPost]
         public async Task<IActionResult> TogglePostFavourite(FavouriteViewModel model)
         {
@@ -150,6 +149,24 @@ namespace Circle_App.Controllers
                 _context.Favourites.Add(newFavourite);
                 await _context.SaveChangesAsync();
             }
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> TogglePostVisibility(PostVisibilityViewModel model)
+        {
+            int loggedInUserId = 1;
+
+            var isPostVisible = await _context.Posts
+                .FirstOrDefaultAsync(l => l.PostId == model.PostId && l.UserId == loggedInUserId);
+
+            if (isPostVisible != null)
+            {
+                isPostVisible.IsPrivate = !isPostVisible.IsPrivate;
+                _context.Posts.Update(isPostVisible);
+                await _context.SaveChangesAsync();
+            }
+            
             return RedirectToAction("Index");
         }
     }
