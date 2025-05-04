@@ -189,5 +189,21 @@ namespace Circle_App.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> PostDelete(RemovePostViewModel model)
+        {
+            int loggedInUser = 1;
+
+            var postExists = await _context.Posts.Where(p => p.PostId == model.PostId).FirstOrDefaultAsync();
+
+            if (postExists != null)
+            {
+                _context.Posts.Remove(postExists);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Index");
+        }
     }
 }
