@@ -22,7 +22,7 @@ namespace Circle_App.Controllers
         {
             int loggedInUser = 1;
             var allPosts = await _context.Posts
-                .Where(u => (!u.IsPrivate || u.UserId == loggedInUser) && u.Reports.Count < 5)
+                .Where(u => (!u.IsPrivate || u.UserId == loggedInUser) && u.Reports.Count < 5 && !u.IsDeleted)
                 .Include(u => u.User)
                 .Include(u => u.Likes)
                 .Include(u => u.Favourites)
@@ -193,13 +193,12 @@ namespace Circle_App.Controllers
         [HttpPost]
         public async Task<IActionResult> PostDelete(RemovePostViewModel model)
         {
-            int loggedInUser = 1;
-
-            var postExists = await _context.Posts.Where(p => p.PostId == model.PostId).FirstOrDefaultAsync();
+            var postExists = await _context.Posts.FirstOrDefaultAsync(p => p.PostId == model.PostId);
 
             if (postExists != null)
             {
-                _context.Posts.Remove(postExists);
+                postExists.IsDeleted = true;
+                _context.Posts.Update(postExists);
                 await _context.SaveChangesAsync();
             }
 

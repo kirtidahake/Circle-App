@@ -12,6 +12,7 @@ namespace Circle_App.Data.Models
         public DateTime DateCreated { get; set; }
         public DateTime DateUploaded { get; set; }
         public bool IsPrivate { get; set; }
+        public bool IsDeleted { get; set; }
 
         public int UserId { get; set; }
         public User User { get; set; }
