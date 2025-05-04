@@ -15,12 +15,18 @@ namespace Circle_App.Data
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Favourites> Favourites { get; set; }
         public DbSet<Report> Reports { get; set; }
+        public DbSet<Story> Stories { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Posts)
                 .WithOne(p => p.User)
                 .HasForeignKey(p => p.UserId);
+
+            modelBuilder.Entity<User>()
+               .HasMany(u => u.Stories)
+               .WithOne(p => p.User)
+               .HasForeignKey(p => p.UserId);
 
             modelBuilder.Entity<Likes>()
                 .HasKey(l => new { l.PostId, l.UserId });
