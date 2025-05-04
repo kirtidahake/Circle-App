@@ -98,3 +98,13 @@
 
 <partial name="Modals/_CreateStory"></partial>
 <partial name="Modals/_CreateStatus" model= "new PostViewModel()"></partial>
+<partial name="Home/_PostDeleteConfirmation" />
+
+<script>
+    window.openPostDeleteConfirmation= function(postId) {
+        // UIkit.dropdown('.post-options-dropdown').hide();
+        UIkit.dropdown('.post-options-dropdown', { animation: 'uk-animation-fade', duration: 100 });
+        document.getElementById('postId').value = postId;
+        UIkit.modal('#postDeteleDailog').show();
+    }
+</script>
