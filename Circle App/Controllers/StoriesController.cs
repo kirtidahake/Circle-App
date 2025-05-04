@@ -12,7 +12,7 @@ namespace Circle_App.Controllers
 
         public StoriesController(ApplicationDbContext context)
         {
-            context = _context;
+            _context = context;
         }
         public IActionResult Index()
         {
@@ -46,7 +46,7 @@ namespace Circle_App.Controllers
                     newStory.ImageUrl = "images/stories" + filePath;
                 }
             }
-            await _context.Stories.AddAsync(newStory);
+             _context.Stories.AddAsync(newStory);
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Index", "Home");
