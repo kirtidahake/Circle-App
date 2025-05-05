@@ -14,7 +14,10 @@ namespace Circle_App.ViewComponents
         }
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var allStories = _context.Stories.Include(u => u.User).ToList();
+            var allStories = _context.Stories
+                .Where(u => u.DateCreated >= DateTime.UtcNow.AddHours(-24))
+                .Include(u => u.User)
+                .ToList();
             return View(allStories);
         }
 
