@@ -16,7 +16,8 @@ namespace Circle_App.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            return View();
+            var allStories = _context.Stories.Include(u => u.User).ToList();
+            return View(allStories);
         }
         public async Task<IActionResult> CreateStory(StoryViewModel model)
         {
@@ -37,16 +38,16 @@ namespace Circle_App.Controllers
                     string rootFolderPathImages = Path.Combine(rootFolderPath, "images/stories");
                     Directory.CreateDirectory(rootFolderPathImages);
 
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.Image.ContentType);
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.Image.FileName);
                     string filePath = Path.Combine(rootFolderPathImages, fileName);
 
                     using (var stream = new FileStream(filePath, FileMode.Create))
                         await model.Image.CopyToAsync(stream);
 
-                    newStory.ImageUrl = "images/stories" + filePath;
+                    newStory.ImageUrl = "images/stories/" + fileName;
                 }
             }
-             _context.Stories.AddAsync(newStory);
+             await  _context.Stories.AddAsync(newStory);
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Index");
