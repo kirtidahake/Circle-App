@@ -14,11 +14,7 @@ namespace Circle_App.Controllers
         {
             _context = context;
         }
-        public async Task<IActionResult> Index()
-        {
-            var allStories = _context.Stories.Include(u => u.User).ToList();
-            return View(allStories);
-        }
+       
         public async Task<IActionResult> CreateStory(StoryViewModel model)
         {
             int loggedInUser = 1;
@@ -50,7 +46,7 @@ namespace Circle_App.Controllers
              await  _context.Stories.AddAsync(newStory);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index","Home");
         }
     }
 }
