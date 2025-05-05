@@ -14,7 +14,7 @@ namespace Circle_App.Controllers
         {
             _context = context;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             return View();
         }
@@ -49,7 +49,7 @@ namespace Circle_App.Controllers
              _context.Stories.AddAsync(newStory);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index");
         }
     }
 }
