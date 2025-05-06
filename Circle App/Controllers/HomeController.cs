@@ -228,8 +228,21 @@ namespace Circle_App.Controllers
                 postExists.IsDeleted = true;
                 _context.Posts.Update(postExists);
                 await _context.SaveChangesAsync();
-            }
 
+                var postHashtags = HashtagHelpers.GetHashtage(postExists.Content);
+                foreach (var items in postHashtags)
+                {
+                    var hashtagExists = await _context.Hashtag.FirstOrDefaultAsync(h => h.HashtagName == items);
+                    if (hashtagExists != null)
+                    {
+                        hashtagExists.Count -= 1;
+                        hashtagExists.DateUpdated = DateTime.UtcNow;
+
+                        _context.Hashtag.Update(hashtagExists);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+            }
             return RedirectToAction("Index");
         }
     }
