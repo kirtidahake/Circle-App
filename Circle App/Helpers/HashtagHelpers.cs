@@ -8,7 +8,7 @@ namespace Circle_App.Helpers
         {
             var hashtagPattern = new Regex(@"#\w+");
             var matches = hashtagPattern.Matches(postContent)
-                .Select(matches => matches.Value.TrimEnd(',', ',', '!', '?'))
+                .Select(matches => matches.Value.TrimEnd(',', ',', '!', '?').ToLower())
                 .Distinct()
                 .ToList();
             return matches;

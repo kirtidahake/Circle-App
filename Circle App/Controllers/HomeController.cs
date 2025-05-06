@@ -1,5 +1,6 @@
 using Circle_App.Data;
 using Circle_App.Data.Models;
+using Circle_App.Helpers;
 using Circle_App.ViewModels.Home;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -67,6 +68,33 @@ namespace Circle_App.Controllers
             }
             await _context.Posts.AddAsync(newPost);
             await _context.SaveChangesAsync();
+
+            //Find and store Hashtags
+            var postHashtags = HashtagHelpers.GetHashtage(post.Content);
+            foreach (var items in postHashtags)
+            {
+                var hashtagExists = await _context.Hashtag.FirstOrDefaultAsync(h => h.HashtagName == items);
+                if (hashtagExists != null)
+                {
+                    hashtagExists.Count += 1;
+                    hashtagExists.DateUpdated = DateTime.UtcNow;
+
+                    _context.Hashtag.Update(hashtagExists);
+                    await _context.SaveChangesAsync();
+                }
+                else 
+                {
+                    var newHashtag = new Hashtag()
+                    {
+                        HashtagName = items,
+                        Count = 1,
+                        DateCreated = DateTime.UtcNow,
+                        DateUpdated = DateTime.UtcNow
+                    };
+                    _context.Hashtag.Add(newHashtag);
+                    await _context.SaveChangesAsync();
+                }
+            };
 
             return RedirectToAction("Index");
         }
