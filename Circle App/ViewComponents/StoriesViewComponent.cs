@@ -2,6 +2,7 @@
 using Circle_App.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 namespace Circle_App.ViewComponents
 {
     public class StoriesViewComponent : ViewComponent
