@@ -1,23 +1,21 @@
 ﻿
 using Circle_App.Data;
+using Circle_App.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 namespace Circle_App.ViewComponents
 {
     public class StoriesViewComponent : ViewComponent
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IStoriesService _storiesService;
 
-        public StoriesViewComponent(ApplicationDbContext context)
+        public StoriesViewComponent(IStoriesService storiesService)
         {
-            _context = context;
+            _storiesService = storiesService;
         }
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var allStories = await _context.Stories
-                //.Where(u => u.DateCreated >= DateTime.UtcNow.AddHours(-24))
-                .Include(u => u.User)
-                .ToListAsync();
+            var allStories = await _storiesService.GetAllStoriesAsync();
             return View(allStories);
         }
 
