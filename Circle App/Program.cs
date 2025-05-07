@@ -1,5 +1,6 @@
 using Circle_App.Data;
 using Circle_App.Helpers;
+using Circle_App.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("CircleAppDb")));
+
+//Service Configuration
+builder.Services.AddScoped<IPostService, PostService>();
 
 var app = builder.Build();
 //Seed the database with  initial data

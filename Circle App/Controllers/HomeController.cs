@@ -1,6 +1,7 @@
 using Circle_App.Data;
 using Circle_App.Data.Models;
 using Circle_App.Helpers;
+using Circle_App.Services;
 using Circle_App.ViewModels.Home;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,25 +13,19 @@ namespace Circle_App.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
+        private readonly IPostService _postService;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, IPostService postService)
         {
             _logger = logger;
             _context = context;
+            _postService = postService;
         }
 
         public async Task<IActionResult> Index()
         {
             int loggedInUser = 1;
-            var allPosts = await _context.Posts
-                .Where(u => (!u.IsPrivate || u.UserId == loggedInUser) && u.Reports.Count < 5 && !u.IsDeleted)
-                .Include(u => u.User)
-                .Include(u => u.Likes)
-                .Include(u => u.Favourites)
-                .Include(u => u.Reports)
-                .Include(u =>u.Comments).ThenInclude(u => u.User)
-                .OrderByDescending(n => n.DateCreated)
-                .ToListAsync();
+            var allPosts = await _postService.GetAllPostsAsync(loggedInUser);
             return View(allPosts);
         }
 
@@ -49,10 +44,7 @@ namespace Circle_App.Controllers
                 UserId = loggedInUser
             };
 
-           
-            await _context.Posts.AddAsync(newPost);
-            await _context.SaveChangesAsync();
-
+            await _postService.CreatePostAsync(newPost, post.Image);
             //Find and store Hashtags
             var postHashtags = HashtagHelpers.GetHashtage(post.Content);
             foreach (var items in postHashtags)
@@ -87,25 +79,8 @@ namespace Circle_App.Controllers
         public async Task<IActionResult> TogglePostLike(PostLikeViewModel postLikeVM)
          {
             int loggedInUserId = 1;
+            await _postService.TogglePostLiekAsync(postLikeVM.PostId, loggedInUserId);
 
-            var like = await _context.Likes
-                .Where(l => l.UserId == loggedInUserId && l.PostId == postLikeVM.PostId)
-                .FirstOrDefaultAsync();
-
-            if (like != null)
-            {
-                _context.Likes.Remove(like);
-                await _context.SaveChangesAsync();
-            }
-            else {
-                var newLike = new Likes()
-                {
-                    PostId = postLikeVM.PostId,
-                    UserId = loggedInUserId
-                };
-                _context.Likes.Add(newLike);
-                await _context.SaveChangesAsync();
-            }
             return RedirectToAction("Index");
         }
 
@@ -122,21 +97,15 @@ namespace Circle_App.Controllers
                 CreatedDate = DateTime.UtcNow,
                 UpdatedDate = DateTime.UtcNow
             };
-            await _context.Comments.AddAsync(newCommnet);
-            await _context.SaveChangesAsync();
 
+            await _postService.AddPostCommentAsync(newCommnet);
             return RedirectToAction("Index");
         }
 
         [HttpPost]
         public async Task<IActionResult> RemovePostComment(RemovePostCommentViewModel model)
         {
-            var commentExists = await _context.Comments.FirstOrDefaultAsync(c => c.CommentId == model.CommentId);
-            if (commentExists != null)
-            {
-                 _context.Comments.Remove(commentExists);
-                await _context.SaveChangesAsync();
-            }
+            await _postService.RemovePostCommentAsync(model.CommentId);
             return RedirectToAction("Index");
         }
 
@@ -144,26 +113,8 @@ namespace Circle_App.Controllers
         public async Task<IActionResult> TogglePostFavourite(FavouriteViewModel model)
         {
             int loggedInUserId = 1;
+            await _postService.TogglePostFavouriteAsync(model.PostId, loggedInUserId);
 
-            var favourite = await _context.Favourites
-                .Where(l => l.UserId == loggedInUserId && l.PostId == model.PostId)
-                .FirstOrDefaultAsync();
-
-            if (favourite != null)
-            {
-                _context.Favourites.Remove(favourite);
-                await _context.SaveChangesAsync();
-            }
-            else
-            {
-                var newFavourite = new Favourites()
-                {
-                    PostId = model.PostId,
-                    UserId = loggedInUserId
-                };
-                _context.Favourites.Add(newFavourite);
-                await _context.SaveChangesAsync();
-            }
             return RedirectToAction("Index");
         }
 
@@ -171,17 +122,7 @@ namespace Circle_App.Controllers
         public async Task<IActionResult> TogglePostVisibility(PostVisibilityViewModel model)
         {
             int loggedInUserId = 1;
-
-            var isPostVisible = await _context.Posts
-                .FirstOrDefaultAsync(l => l.PostId == model.PostId && l.UserId == loggedInUserId);
-
-            if (isPostVisible != null)
-            {
-                isPostVisible.IsPrivate = !isPostVisible.IsPrivate;
-                _context.Posts.Update(isPostVisible);
-                await _context.SaveChangesAsync();
-            }
-            
+            await _postService.TogglePostVisibilityAsync(model.PostId, loggedInUserId);
             return RedirectToAction("Index");
         }
 
@@ -189,44 +130,28 @@ namespace Circle_App.Controllers
         public async Task<IActionResult> AddPostReport(PostReportViewModel model)
         {
             int loggedInUserId = 1;
-
-            var newReport = new Report()
-            {
-                UserId = loggedInUserId,
-                PostId = model.PostId,
-                DateCreated = DateTime.UtcNow,
-            };
-            await _context.Reports.AddAsync(newReport);
-            await _context.SaveChangesAsync();
-
+            await _postService.ReportPostAsync(model.PostId, loggedInUserId);
             return RedirectToAction("Index");
         }
 
         [HttpPost]
         public async Task<IActionResult> PostDelete(RemovePostViewModel model)
         {
-            var postExists = await _context.Posts.FirstOrDefaultAsync(p => p.PostId == model.PostId);
+            await _postService.RemovePostAsync(model.PostId);
+               //Update Hashtag
+                //var postHashtags = HashtagHelpers.GetHashtage(postExists.Content);
+                //foreach (var items in postHashtags)
+                //{
+                //    var hashtagExists = await _context.Hashtag.FirstOrDefaultAsync(h => h.HashtagName == items);
+                //    if (hashtagExists != null)
+                //    {
+                //        hashtagExists.Count -= 1;
+                //        hashtagExists.DateUpdated = DateTime.UtcNow;
 
-            if (postExists != null)
-            {
-                postExists.IsDeleted = true;
-                _context.Posts.Update(postExists);
-                await _context.SaveChangesAsync();
-
-                var postHashtags = HashtagHelpers.GetHashtage(postExists.Content);
-                foreach (var items in postHashtags)
-                {
-                    var hashtagExists = await _context.Hashtag.FirstOrDefaultAsync(h => h.HashtagName == items);
-                    if (hashtagExists != null)
-                    {
-                        hashtagExists.Count -= 1;
-                        hashtagExists.DateUpdated = DateTime.UtcNow;
-
-                        _context.Hashtag.Update(hashtagExists);
-                        await _context.SaveChangesAsync();
-                    }
-                }
-            }
+                //        _context.Hashtag.Update(hashtagExists);
+                //        await _context.SaveChangesAsync();
+                //    }
+                //}
             return RedirectToAction("Index");
         }
     }

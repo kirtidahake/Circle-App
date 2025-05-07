@@ -17,8 +17,8 @@ namespace Circle_App.ViewComponents
 
             var topThreeHashtags = _context.Hashtag
                 .Where(h => h.DateCreated >= oneWeekAgo)
-                .OrderByDescending(h => h.DateCreated)
-                .Take(5)
+                .OrderByDescending(h => h.Count)
+                .Take(3)
                 .ToList();
             return View(topThreeHashtags);
         }

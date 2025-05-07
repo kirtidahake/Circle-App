@@ -77,7 +77,6 @@ namespace Circle_App.Services
                 _context.Comments.Remove(commentDb);
                 await _context.SaveChangesAsync();
             }
-            throw new NotImplementedException();
         }
 
         public async Task ReportPostAsync(int postId, int userId)
@@ -137,9 +136,17 @@ namespace Circle_App.Services
             }
         }
 
-        Task IPostService.TogglePostVisibilityAsync(int postId, int userId)
+        public async Task TogglePostVisibilityAsync(int postId, int userId)
         {
-            throw new NotImplementedException();
+            var post = await _context.Posts
+                .FirstOrDefaultAsync(l => l.PostId == postId && l.UserId == userId);
+
+            if (post != null)
+            {
+                post.IsPrivate = !post.IsPrivate;
+                _context.Posts.Update(post);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }
