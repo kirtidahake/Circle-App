@@ -12,6 +12,7 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("CircleAppDb")));
 
 //Service Configuration
 builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<IHashtagService, HashtagService>();
 
 var app = builder.Build();
 //Seed the database with  initial data

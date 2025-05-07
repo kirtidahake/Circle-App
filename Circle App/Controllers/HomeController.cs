@@ -12,13 +12,13 @@ namespace Circle_App.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly ApplicationDbContext _context;
+        private readonly IHashtagService _hashtagService;
         private readonly IPostService _postService;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, IPostService postService)
+        public HomeController(ILogger<HomeController> logger, IPostService postService, IHashtagService hashtagService)
         {
             _logger = logger;
-            _context = context;
+            _hashtagService = hashtagService;
             _postService = postService;
         }
 
@@ -45,32 +45,8 @@ namespace Circle_App.Controllers
             };
 
             await _postService.CreatePostAsync(newPost, post.Image);
-            //Find and store Hashtags
-            var postHashtags = HashtagHelpers.GetHashtage(post.Content);
-            foreach (var items in postHashtags)
-            {
-                var hashtagExists = await _context.Hashtag.FirstOrDefaultAsync(h => h.HashtagName == items);
-                if (hashtagExists != null)
-                {
-                    hashtagExists.Count += 1;
-                    hashtagExists.DateUpdated = DateTime.UtcNow;
-
-                    _context.Hashtag.Update(hashtagExists);
-                    await _context.SaveChangesAsync();
-                }
-                else 
-                {
-                    var newHashtag = new Hashtag()
-                    {
-                        HashtagName = items,
-                        Count = 1,
-                        DateCreated = DateTime.UtcNow,
-                        DateUpdated = DateTime.UtcNow
-                    };
-                    _context.Hashtag.Add(newHashtag);
-                    await _context.SaveChangesAsync();
-                }
-            };
+            await _hashtagService.ProcessHashtagForNewPostAsync(post.Content);
+            
 
             return RedirectToAction("Index");
         }
@@ -137,21 +113,9 @@ namespace Circle_App.Controllers
         [HttpPost]
         public async Task<IActionResult> PostDelete(RemovePostViewModel model)
         {
-            await _postService.RemovePostAsync(model.PostId);
-               //Update Hashtag
-                //var postHashtags = HashtagHelpers.GetHashtage(postExists.Content);
-                //foreach (var items in postHashtags)
-                //{
-                //    var hashtagExists = await _context.Hashtag.FirstOrDefaultAsync(h => h.HashtagName == items);
-                //    if (hashtagExists != null)
-                //    {
-                //        hashtagExists.Count -= 1;
-                //        hashtagExists.DateUpdated = DateTime.UtcNow;
-
-                //        _context.Hashtag.Update(hashtagExists);
-                //        await _context.SaveChangesAsync();
-                //    }
-                //}
+            var postRemoved = await _postService.RemovePostAsync(model.PostId);
+            await _hashtagService.ProcessHashtagForRemovePostAsync(postRemoved.Content);
+               
             return RedirectToAction("Index");
         }
     }

@@ -52,7 +52,7 @@ namespace Circle_App.Services
             return post;
         }
         
-        public async Task RemovePostAsync(int postId)
+        public async Task<Posts> RemovePostAsync(int postId)
         {
            var postDb = await _context.Posts.FirstOrDefaultAsync(p => p.PostId == postId);
 
@@ -62,6 +62,7 @@ namespace Circle_App.Services
                 _context.Posts.Update(postDb);
                 await _context.SaveChangesAsync();
             }
+            return postDb;
         }
         public async Task AddPostCommentAsync(Comment comment)
         {

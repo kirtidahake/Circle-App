@@ -6,7 +6,7 @@ namespace Circle_App.Services
     {
         Task<List<Posts>> GetAllPostsAsync(int loggedInUserId);
         Task<Posts> CreatePostAsync(Posts post,IFormFile image);
-        Task RemovePostAsync(int postId);
+        Task<Posts> RemovePostAsync(int postId);
 
         Task AddPostCommentAsync(Comment comment);
         Task RemovePostCommentAsync(int commentId);
