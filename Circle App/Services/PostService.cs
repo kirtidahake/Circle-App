@@ -1,5 +1,6 @@
 ﻿using Circle_App.Data;
 using Circle_App.Data.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Circle_App.Services
@@ -25,27 +26,43 @@ namespace Circle_App.Services
                 .ToListAsync();
             return allPosts;
         }
-  
-        public async Task<Posts> CreatePostAsync(Posts post, IFormFile image)
+        [HttpGet]
+        public async Task<List<Posts>> GetAllFavouritedPostsAsync(int loggedInUserId)
         {
-            if (image != null && image.Length > 0)
-            {
-                string rootFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-                if (image.ContentType.Contains("image"))
-                {
-                    string rooFolderPathImages = Path.Combine(rootFolderPath, "images/posts");
-                    Directory.CreateDirectory(rooFolderPathImages);
+            //var allFavouritedPosts = await _context.Favourites
+            //    .Include(f => f.Post.Reports)
+            //        .Where(n => n.UserId == loggedInUserId && 
+            //        !n.Post.IsDeleted && 
+            //        n.Post.Reports.Count < 5)
+            //    .Include(n => n.Post)
+            //    .Select(n => n.Post)
+            //        .Include(p => p.User)
+            //        .Include(p => p.Comments)
+            //            .ThenInclude(n => n.User)
+            //        .Include(p => p.Likes)
+            //    .ToListAsync();
 
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
-                    string filePath = Path.Combine(rooFolderPathImages, fileName);
+            var allFavouritedPosts = await _context.Favourites
+            .Where(n => n.UserId == loggedInUserId &&
+                    !n.Post.IsDeleted &&
+                    n.Post.Reports.Count < 5)
+            .Include(n => n.Post)
+            .ThenInclude(p => p.User)
+        .Include(n => n.Post)
+            .ThenInclude(p => p.Comments)
+                .ThenInclude(c => c.User)
+        .Include(n => n.Post)
+            .ThenInclude(p => p.Likes)
+        .Include(n => n.Post)
+            .ThenInclude(p => p.Reports)
+        .Select(n => n.Post)
+        .ToListAsync();
+            return allFavouritedPosts;
+        }
 
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                        await image.CopyToAsync(stream);
-
-                    post.ImageUrl = "/images/posts/" + fileName;
-                }
-            }
-
+        public async Task<Posts> CreatePostAsync(Posts post)
+        {
+            
             await _context.Posts.AddAsync(post);
             await _context.SaveChangesAsync();
 
@@ -107,7 +124,8 @@ namespace Circle_App.Services
                 var newFavourite = new Favourites()
                 {
                     PostId = postId,
-                    UserId = userId
+                    UserId = userId,
+                    DateCreated = DateTime.UtcNow
                 };
                 _context.Favourites.Add(newFavourite);
                 await _context.SaveChangesAsync();

@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <Folder Include="Views\Stories\" />
+    <Folder Include="wwwroot\images\stories\" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,7 @@
 using Circle_App.Data;
 using Circle_App.Data.Models;
 using Circle_App.Helpers;
+using Circle_App.Helpers.Enum;
 using Circle_App.Services;
 using Circle_App.ViewModels.Home;
 using Microsoft.AspNetCore.Mvc;
@@ -14,12 +15,14 @@ namespace Circle_App.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IHashtagService _hashtagService;
         private readonly IPostService _postService;
+        private readonly IFilesService _filesService;
 
-        public HomeController(ILogger<HomeController> logger, IPostService postService, IHashtagService hashtagService)
+        public HomeController(ILogger<HomeController> logger, IPostService postService, IHashtagService hashtagService, IFilesService filesService)
         {
             _logger = logger;
             _hashtagService = hashtagService;
             _postService = postService;
+            _filesService = filesService;
         }
 
         public async Task<IActionResult> Index()
@@ -33,18 +36,18 @@ namespace Circle_App.Controllers
         public async Task<IActionResult> CreatePost(PostViewModel post)
         {
             int loggedInUser = 1;
-
+            var imageUploadPath = await _filesService.UploadImageAsync(post.Image, ImageFileType.PostImages);
             var newPost = new Posts()
             {
                 Content = post.Content,
                 DateCreated = DateTime.UtcNow,
                 DateUploaded = DateTime.UtcNow,
-                ImageUrl = "",
+                ImageUrl = imageUploadPath,
                 NrOfReports = 0,
                 UserId = loggedInUser
             };
 
-            await _postService.CreatePostAsync(newPost, post.Image);
+            await _postService.CreatePostAsync(newPost);
             await _hashtagService.ProcessHashtagForNewPostAsync(post.Content);
             
 
