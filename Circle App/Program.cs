@@ -15,6 +15,7 @@ builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IHashtagService, HashtagService>();
 builder.Services.AddScoped<IStoriesService, StoriesService>();
 builder.Services.AddScoped<IFilesService, FilesService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 //Seed the database with  initial data
