@@ -17,5 +17,16 @@ namespace Circle_App.Services
             
             return await _context.Users.FirstOrDefaultAsync(n => n.UserId == loggedInUser) ?? new User();
         }
+
+        public async Task UpdateUserProfilePicture(int loggedInUser, string ProfilePictureUrl)
+        {
+            var userDb = await _context.Users.FirstOrDefaultAsync(n => n.UserId == loggedInUser);
+
+            if (userDb != null) 
+            {
+                userDb.ProfilePictureUrl = ProfilePictureUrl;
+                _context.Users.Update(userDb);
+                await _context.SaveChangesAsync();
+            }
     }
 }
