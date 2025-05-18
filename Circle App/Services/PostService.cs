@@ -29,34 +29,19 @@ namespace Circle_App.Services
         [HttpGet]
         public async Task<List<Posts>> GetAllFavouritedPostsAsync(int loggedInUserId)
         {
-            //var allFavouritedPosts = await _context.Favourites
-            //    .Include(f => f.Post.Reports)
-            //        .Where(n => n.UserId == loggedInUserId && 
-            //        !n.Post.IsDeleted && 
-            //        n.Post.Reports.Count < 5)
-            //    .Include(n => n.Post)
-            //    .Select(n => n.Post)
-            //        .Include(p => p.User)
-            //        .Include(p => p.Comments)
-            //            .ThenInclude(n => n.User)
-            //        .Include(p => p.Likes)
-            //    .ToListAsync();
-
             var allFavouritedPosts = await _context.Favourites
-            .Where(n => n.UserId == loggedInUserId &&
-                    !n.Post.IsDeleted &&
-                    n.Post.Reports.Count < 5)
-            .Include(n => n.Post)
-            .ThenInclude(p => p.User)
-        .Include(n => n.Post)
-            .ThenInclude(p => p.Comments)
-                .ThenInclude(c => c.User)
-        .Include(n => n.Post)
-            .ThenInclude(p => p.Likes)
-        .Include(n => n.Post)
-            .ThenInclude(p => p.Reports)
-        .Select(n => n.Post)
-        .ToListAsync();
+                .Include(u => u.Post.Reports)
+                .Include(u => u.Post.User)
+                .Include (u => u.Post.Likes)
+                .Include (u => u.Post.Comments)
+                    .ThenInclude(c => c.User)
+                .Include(u => u.Post.Favourites)
+                .Where(u => u.UserId == loggedInUserId
+                    && !u.Post.IsDeleted 
+                    && u.Post.Reports.Count < 5)
+                .OrderByDescending(u => u.DateCreated)
+                .Select(u => u.Post)
+                .ToListAsync();
             return allFavouritedPosts;
         }
 
