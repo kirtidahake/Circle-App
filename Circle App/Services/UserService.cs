@@ -14,7 +14,7 @@ namespace Circle_App.Services
         }
         public async Task<User> GetUser(int loggedInUser)
         {
-            
+
             return await _context.Users.FirstOrDefaultAsync(n => n.UserId == loggedInUser) ?? new User();
         }
 
@@ -22,11 +22,12 @@ namespace Circle_App.Services
         {
             var userDb = await _context.Users.FirstOrDefaultAsync(n => n.UserId == loggedInUser);
 
-            if (userDb != null) 
+            if (userDb != null)
             {
                 userDb.ProfilePictureUrl = ProfilePictureUrl;
                 _context.Users.Update(userDb);
                 await _context.SaveChangesAsync();
             }
+        }
     }
 }
