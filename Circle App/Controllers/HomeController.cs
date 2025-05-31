@@ -54,6 +54,12 @@ namespace Circle_App.Controllers
             return RedirectToAction("Index");
         }
 
+        public async Task<IActionResult> Details(int postId)
+        { 
+            var post = await _postService.GetPostByIdAsync(postId);
+            return View(post);
+        }
+
         [HttpPost]
         public async Task<IActionResult> TogglePostLike(PostLikeViewModel postLikeVM)
          {

@@ -23,7 +23,7 @@ namespace Circle_App.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateProfilePicture(ProfilePictureViewModel model)
+        public async Task<IActionResult> UpdateProfilePicture(UpdateProfilePictureViewModel model)
         {
             var loggedInUser = 1;
             var uploadedProfilePictureImageUrl = await _fileService.UploadImageAsync(model.ProfilePictureImage, ImageFileType.ProficePictures);
