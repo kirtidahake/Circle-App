@@ -44,8 +44,9 @@
                     </ul>
                 </nav>
             </div>
-
+          @*   Update Profile Info *@
             <div id="setting_tab" class="uk-switcher py-12 px-20 overflow-hidden text-black text-sm">
+                <form asp-controller="Settings" asp-action="UpdateProfile">
                 <div>
                     <div class="space-y-6">
                         <div class="flex items-center gap-10">
@@ -78,7 +79,10 @@
                         </div>
                     </div>
                 </div>
+                </form>
+               @*  Password Section *@
                 <div>
+                    <form asp-controller="Settings" asp-action="UpdatePassword">
                     <div class="space-y-6">
                         <div class="flex items-center gap-10">
                             <label class="w-32 text-right">Current password</label>
@@ -103,6 +107,7 @@
                             <button type="submit" class="button px-10 bg-primary text-white">Save</button>
                         </div>
                     </div>
+                    </form>
                 </div>
             </div>
         </div>

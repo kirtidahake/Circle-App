@@ -23,13 +23,25 @@ namespace Circle_App.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult>UpdateProfilePicture(ProfilePictureViewModel model)
+        public async Task<IActionResult> UpdateProfilePicture(ProfilePictureViewModel model)
         {
             var loggedInUser = 1;
             var uploadedProfilePictureImageUrl = await _fileService.UploadImageAsync(model.ProfilePictureImage, ImageFileType.ProficePictures);
 
             await _userService.UpdateUserProfilePicture(loggedInUser, uploadedProfilePictureImageUrl);
 
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateProfile(UpdateProfileViewModel model)
+        {
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdatePassword(UpdatePasswordViewModel model)
+        {
             return RedirectToAction("Index");
         }
     }
