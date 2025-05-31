@@ -26,6 +26,19 @@ namespace Circle_App.Services
                 .ToListAsync();
             return allPosts;
         }
+
+        [HttpGet]
+        public async Task<Posts> GetPostByIdAsync(int postId)
+        {
+            var PostDb = await _context.Posts
+                .Include(u => u.User)
+                .Include(u => u.Likes)
+                .Include(u => u.Favourites)
+                .Include(u => u.Comments).ThenInclude(u => u.User)
+                .FirstOrDefaultAsync(u => u.PostId == postId);
+            return PostDb;
+        }
+
         [HttpGet]
         public async Task<List<Posts>> GetAllFavouritedPostsAsync(int loggedInUserId)
         {
